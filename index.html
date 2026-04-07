@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PET Reading Test 1</title>
+<title>PET Test 1 - Reading 1</title>
 
 <style>
 body{
     font-family: Arial;
-    background: linear-gradient(135deg,#36d1dc,#5b86e5);
+    background: linear-gradient(135deg,#667eea,#764ba2);
     margin:0;
 }
 .container{
@@ -18,7 +18,7 @@ body{
     padding:20px;
     border-radius:12px;
 }
-h2{text-align:center}
+h2{text-align:center;color:#333}
 
 input{
     width:100%;
@@ -28,19 +28,20 @@ input{
 
 button{
     padding:10px 15px;
-    background:#3498db;
+    background:#6c5ce7;
     color:white;
     border:none;
     border-radius:6px;
     cursor:pointer;
 }
-button:hover{background:#2980b9}
+button:hover{background:#4834d4}
 
 .hidden{display:none}
 
 .question{
     margin-bottom:15px;
     border-bottom:1px solid #ddd;
+    padding-bottom:8px;
 }
 
 .correct{color:green}
@@ -62,7 +63,7 @@ th,td{
 <body>
 
 <div class="container" id="start">
-<h2>PET Reading Test 1 - Part 1</h2>
+<h2>PET TEST 1 - READING 1</h2>
 <input id="name" placeholder="Họ tên">
 <input id="class" placeholder="Lớp">
 <button onclick="startQuiz()">Bắt đầu</button>
@@ -94,20 +95,20 @@ th,td{
 <script>
 const words = [
 "lesson","beside","language laboratory","off sick","revise","test","workbook",
-"available","application form","office","earliest","pick up","give in","holiday",
-"windsurfing","barbecue","funfair","soon","reserved","attend","invited",
-"borrow","lend","return","glad","laboratory","beside","sick","revise for",
-"attend lesson","available from","bring","office","stopped for","sorry",
-"borrow / lend","return it","available","forms"
+"available","application form","office","earliest","pick up","give in",
+"holiday","windsurfing","barbecue","funfair","soon","reserved","attend",
+"invited","borrow","lend","return","glad","laboratory","beside","sick",
+"revise for","attend lesson","available from","bring","office","stopped for",
+"sorry","borrow / lend","return it","available","forms"
 ];
 
 const meanings = [
-"bài học","bên cạnh","phòng lab ngôn ngữ","nghỉ ốm","ôn tập","bài kiểm tra","sách bài tập",
-"có sẵn","đơn đăng ký","văn phòng","sớm nhất","đón","nộp","kỳ nghỉ",
-"lướt ván","tiệc nướng","hội chợ","sớm","đã đặt trước","tham dự","được mời",
-"mượn","cho mượn","trả lại","vui","phòng thí nghiệm","bên cạnh","ốm",
-"ôn thi","tham gia bài học","có sẵn từ","mang","văn phòng","dừng lại",
-"xin lỗi","mượn/cho mượn","trả nó","có sẵn","các biểu mẫu"
+"bài học","bên cạnh","phòng lab ngôn ngữ","nghỉ ốm","ôn tập","bài kiểm tra",
+"sách bài tập","có sẵn","đơn đăng ký","văn phòng","sớm nhất","đón","nộp",
+"kỳ nghỉ","lướt ván","tiệc nướng","hội chợ","sớm","đã đặt trước","tham dự",
+"được mời","mượn","cho mượn","trả lại","vui","phòng thí nghiệm","bên cạnh",
+"ốm","ôn thi","tham gia buổi học","có từ","mang","văn phòng","dừng lại để",
+"xin lỗi","mượn/cho mượn","trả nó","có sẵn","các mẫu đơn"
 ];
 
 let html="";
@@ -131,7 +132,10 @@ words.forEach((w,i)=>{
 document.getElementById("quiz").innerHTML=html;
 
 function startQuiz(){
-    if(!name.value||!class.value){alert("Nhập đủ thông tin!");return;}
+    if(!name.value||!class.value){
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
     start.classList.add("hidden");
     quizBox.classList.remove("hidden");
 }
@@ -141,18 +145,22 @@ function submitQuiz(){
     words.forEach((w,i)=>{
         let sel=document.querySelector(`input[name=q${i}]:checked`);
         let val=sel?sel.value:"";
+
         if(val===meanings[i]){
             correct++;
             output+=`<p class="correct">${i+1}. Đúng</p>`;
         }else{
-            output+=`<p class="wrong">${i+1}. Sai (${meanings[i]})</p>`;
+            output+=`<p class="wrong">${i+1}. Sai (Đáp án: ${meanings[i]})</p>`;
         }
     });
 
     let score=(correct/words.length*10).toFixed(2);
 
-    result.innerHTML=`<h3>Đúng: ${correct}/${words.length}</h3>
-    <h3>Điểm: ${score}</h3>${output}`;
+    result.innerHTML=`
+    <h3>Đúng: ${correct}/${words.length}</h3>
+    <h3>Điểm: ${score}</h3>
+    ${output}
+    `;
 
     save(correct,score);
 
@@ -163,22 +171,33 @@ function submitQuiz(){
 }
 
 function save(c,s){
-    let data=JSON.parse(localStorage.getItem("pet")||"[]");
-    data.push({name:name.value,class:class.value,c,s,time:new Date().toLocaleString()});
-    localStorage.setItem("pet",JSON.stringify(data));
+    let data=JSON.parse(localStorage.getItem("petR1")||"[]");
+    data.push({
+        name:name.value,
+        class:class.value,
+        c,
+        s,
+        time:new Date().toLocaleString()
+    });
+    localStorage.setItem("petR1",JSON.stringify(data));
 }
 
 function load(){
-    let data=JSON.parse(localStorage.getItem("pet")||"[]");
+    let data=JSON.parse(localStorage.getItem("petR1")||"[]");
     table.innerHTML=data.map((d,i)=>`
     <tr>
-    <td>${i+1}</td><td>${d.name}</td><td>${d.class}</td>
-    <td>${d.c}</td><td>${d.s}</td><td>${d.time}</td>
-    </tr>`).join("");
+    <td>${i+1}</td>
+    <td>${d.name}</td>
+    <td>${d.class}</td>
+    <td>${d.c}</td>
+    <td>${d.s}</td>
+    <td>${d.time}</td>
+    </tr>
+    `).join("");
 }
 
 function clearData(){
-    localStorage.removeItem("pet");
+    localStorage.removeItem("petR1");
     load();
 }
 </script>
