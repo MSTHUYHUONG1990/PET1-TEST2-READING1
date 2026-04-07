@@ -3,236 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PET1T1READ1</title>
+<title>PET TEST</title>
 
 <style>
-body{
-    font-family: Arial;
-    margin:0;
-    background: linear-gradient(135deg,#ff9a9e,#fad0c4);
-}
-.container{
-    max-width:900px;
-    margin:auto;
-    background:#fff;
-    padding:20px;
-    border-radius:12px;
-    margin-top:20px;
-}
-h1{text-align:center;}
-input,button{
-    padding:10px;
-    margin:5px;
-    border-radius:8px;
-    border:1px solid #ccc;
-}
-button{
-    background:#ff7a7a;
-    color:white;
-    cursor:pointer;
-}
-button:hover{background:#ff5252;}
-.question{margin:15px 0;}
+body{font-family:Arial;margin:0;background:#6a85b6;}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px;margin-top:20px;border-radius:10px;}
+input,button{padding:10px;margin:5px;border-radius:6px;border:1px solid #ccc;}
+button{background:#4CAF50;color:white;cursor:pointer;}
+.question{margin:10px 0;}
 .correct{color:green;}
 .wrong{color:red;}
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-}
-th,td{
-    border:1px solid #ccc;
-    padding:8px;
-    text-align:center;
-}
-@media(max-width:600px){
-    .container{padding:10px;}
-}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+th,td{border:1px solid #ccc;padding:8px;text-align:center;}
 </style>
 </head>
 
 <body>
 
-<div class="container" id="startScreen">
-<h1>PET 1 TEST 1 READING 1</h1>
-<input id="name" placeholder="Họ tên"><br>
-<input id="class" placeholder="Lớp"><br>
-<button onclick="startTest()">Bắt đầu</button>
+<div class="container" id="start">
+<h2>Nhập thông tin</h2>
+<input id="nameInput" placeholder="Họ tên"><br>
+<input id="classInput" placeholder="Lớp"><br>
+<button onclick="start()">Bắt đầu</button>
 </div>
 
-<div class="container" id="quizScreen" style="display:none;">
-<h1>Bài làm</h1>
-<form id="quizForm"></form>
-<button onclick="submitQuiz()">Nộp bài</button>
+<div class="container" id="quiz" style="display:none;">
+<h2>Bài làm</h2>
+<div id="questions"></div>
+<button onclick="submit()">Nộp bài</button>
 <div id="result"></div>
-<button onclick="location.reload()">Làm lại</button>
 </div>
 
 <div class="container">
-<h2>Bảng kết quả</h2>
-<table id="scoreTable">
-<tr>
-<th>STT</th><th>Họ tên</th><th>Lớp</th><th>Đúng</th><th>Điểm</th><th>Thời gian</th>
-</tr>
-</table>
-<button onclick="clearTable()">Xóa bảng</button>
+<h3>Bảng kết quả</h3>
+<table id="table"></table>
+<button onclick="clearData()">Xóa bảng</button>
 </div>
 
 <script>
-const words = [
-["lesson","bài học"],
-["beside","bên cạnh"],
-["language laboratory","phòng học ngoại ngữ"],
-["off sick","nghỉ ốm"],
-["revise","ôn tập"],
-["test","bài kiểm tra"],
-["workbook","sách bài tập"],
-["available","có sẵn"],
-["application form","đơn đăng ký"],
-["office","văn phòng"],
-["earliest","sớm nhất"],
-["pick up","đón"],
-["give in","nộp"],
-["holiday","kỳ nghỉ"],
-["windsurfing","lướt ván"],
-["barbecue","tiệc nướng"],
-["funfair","hội chợ"],
-["soon","sớm"],
-["reserved","đã đặt trước"],
-["attend","tham gia"],
-["invited","được mời"],
-["borrow","mượn"],
-["lend","cho mượn"],
-["return","trả lại"],
-["glad","vui"],
-["laboratory","phòng thí nghiệm"],
-["beside","bên cạnh"],
-["sick","ốm"],
-["revise for","ôn thi"],
-["attend lesson","tham gia bài học"],
-["available from","có sẵn từ"],
-["bring","mang theo"],
-["office","văn phòng"],
-["stopped for","dừng lại để"],
-["sorry","xin lỗi"],
-["borrow / lend","mượn/cho mượn"],
-["return it","trả nó"],
-["available","có sẵn"]
+const data = [
+["lesson","bài học"],["beside","bên cạnh"],
+["language laboratory","phòng ngoại ngữ"],
+["off sick","nghỉ ốm"],["revise","ôn tập"],
+["test","bài kiểm tra"],["workbook","sách bài tập"],
+["available","có sẵn"],["application form","đơn"],
+["office","văn phòng"],["earliest","sớm nhất"],
+["pick up","đón"],["give in","nộp"],
+["holiday","kỳ nghỉ"],["windsurfing","lướt ván"],
+["barbecue","tiệc nướng"],["funfair","hội chợ"],
+["soon","sớm"],["reserved","đã đặt"],
+["attend","tham gia"],["invited","được mời"],
+["borrow","mượn"],["lend","cho mượn"],
+["return","trả"],["glad","vui"],
+["laboratory","phòng thí nghiệm"],["beside","bên cạnh"],
+["sick","ốm"],["revise for","ôn thi"],
+["attend lesson","đi học"],
+["available from","có từ"],["bring","mang"],
+["office","văn phòng"],["stopped for","dừng để"],
+["sorry","xin lỗi"],["borrow / lend","mượn/cho mượn"],
+["return it","trả nó"],["available","có sẵn"]
 ];
 
-function shuffle(arr){
-return arr.sort(()=>Math.random()-0.5);
-}
+function start(){
+let name=document.getElementById("nameInput").value;
+let cls=document.getElementById("classInput").value;
+if(!name||!cls){alert("Nhập đủ thông tin");return;}
 
-function startTest(){
-if(!name.value||!class.value){
-alert("Vui lòng nhập đầy đủ thông tin!");
-return;
-}
-startScreen.style.display="none";
-quizScreen.style.display="block";
-renderQuestions();
-}
+document.getElementById("start").style.display="none";
+document.getElementById("quiz").style.display="block";
 
-function renderQuestions(){
-const form=document.getElementById("quizForm");
-form.innerHTML="";
-words.forEach((w,i)=>{
-let correct=w[1];
-let options=shuffle([
-correct,
-"không đúng",
-"không chính xác",
-"không phải nghĩa"
-]);
-
-let html=`<div class="question">
-<b>Câu ${i+1}: "${w[0]}" nghĩa là gì?</b><br>`;
-
-options.forEach((opt,j)=>{
-html+=`
-<label>
-<input type="radio" name="q${i}" value="${opt}">
-${String.fromCharCode(65+j)}. ${opt}
-</label><br>`;
+let html="";
+data.forEach((q,i)=>{
+html+=`<div class="question">
+<b>${i+1}. ${q[0]} nghĩa là?</b><br>
+<label><input type="radio" name="q${i}" value="${q[1]}">${q[1]}</label><br>
+<label><input type="radio" name="q${i}" value="sai1">sai</label><br>
+<label><input type="radio" name="q${i}" value="sai2">không đúng</label><br>
+<label><input type="radio" name="q${i}" value="sai3">không phải</label>
+</div>`;
 });
-
-html+="</div>";
-form.innerHTML+=html;
-});
+document.getElementById("questions").innerHTML=html;
 }
 
-function submitQuiz(){
-let correct=0;
-let resultHTML="";
-
-words.forEach((w,i)=>{
+function submit(){
+let correct=0,html="";
+data.forEach((q,i)=>{
 let ans=document.querySelector(`input[name=q${i}]:checked`);
-if(ans){
-if(ans.value===w[1]){
-correct++;
-resultHTML+=`<div class="correct">Câu ${i+1}: Đúng</div>`;
+if(ans && ans.value===q[1]){
+correct++; html+=`<div class="correct">Câu ${i+1} đúng</div>`;
 }else{
-resultHTML+=`<div class="wrong">Câu ${i+1}: Sai (Đáp án: ${w[1]})</div>`;
-}
-}else{
-resultHTML+=`<div class="wrong">Câu ${i+1}: Chưa chọn</div>`;
+html+=`<div class="wrong">Câu ${i+1} sai (${q[1]})</div>`;
 }
 });
+let score=(correct/data.length*10).toFixed(2);
 
-let score=(correct/words.length*10).toFixed(2);
+document.getElementById("result").innerHTML=
+`Đúng ${correct}/${data.length} - Điểm ${score}`+html;
 
-result.innerHTML=`
-<h3>Kết quả</h3>
-<p><b>Đúng: ${correct}/38</b></p>
-<p><b>Điểm: ${score}</b></p>
-${resultHTML}
-`;
-
-saveResult(correct,score);
-loadTable();
+save(correct,score);
+load();
 }
 
-function saveResult(correct,score){
-let data=JSON.parse(localStorage.getItem("scores_pet1")||"[]");
-data.push({
-name:name.value,
-class:class.value,
-correct,
-score,
-time:new Date().toLocaleString()
+function save(c,s){
+let arr=JSON.parse(localStorage.getItem("kq")||"[]");
+arr.push({
+name:document.getElementById("nameInput").value,
+class:document.getElementById("classInput").value,
+c,s,time:new Date().toLocaleString()
 });
-localStorage.setItem("scores_pet1",JSON.stringify(data));
+localStorage.setItem("kq",JSON.stringify(arr));
 }
 
-function loadTable(){
-let data=JSON.parse(localStorage.getItem("scores_pet1")||"[]");
-let table=document.getElementById("scoreTable");
-table.innerHTML=`
-<tr>
-<th>STT</th><th>Họ tên</th><th>Lớp</th><th>Đúng</th><th>Điểm</th><th>Thời gian</th>
-</tr>`;
-data.forEach((d,i)=>{
-table.innerHTML+=`
-<tr>
-<td>${i+1}</td>
-<td>${d.name}</td>
-<td>${d.class}</td>
-<td>${d.correct}</td>
-<td>${d.score}</td>
-<td>${d.time}</td>
+function load(){
+let arr=JSON.parse(localStorage.getItem("kq")||"[]");
+let html="<tr><th>STT</th><th>Tên</th><th>Lớp</th><th>Đúng</th><th>Điểm</th><th>Thời gian</th></tr>";
+arr.forEach((d,i)=>{
+html+=`<tr>
+<td>${i+1}</td><td>${d.name}</td><td>${d.class}</td>
+<td>${d.c}</td><td>${d.s}</td><td>${d.time}</td>
 </tr>`;
 });
+document.getElementById("table").innerHTML=html;
 }
 
-function clearTable(){
-if(confirm("Xóa toàn bộ bảng kết quả?")){
-localStorage.removeItem("scores_pet1");
-loadTable();
-}
+function clearData(){
+localStorage.removeItem("kq"); load();
 }
 
-loadTable();
+load();
 </script>
 
 </body>
